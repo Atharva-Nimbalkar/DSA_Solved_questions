@@ -1,63 +1,47 @@
-class Point{
-    int x;
-    int y;
-    Point(int x,int y){
-        this.x=x;
-        this.y=y;
-    }
-}
-public class Solution {
+class Solution {
     public void solve(char[][] board) {
-        if (board.length == 0) return;
-        
-        int rowN = board.length;
-        int colN = board[0].length;
-        Queue<Point> queue = new LinkedList<Point>();
-       
-       //get all 'O's on the edge first
-        for (int r = 0; r< rowN; r++){
-        	if (board[r][0] == 'O') {
-        		board[r][0] = '+';
-                queue.add(new Point(r, 0));
-        	}
-        	if (board[r][colN-1] == 'O') {
-        		board[r][colN-1] = '+';
-                queue.add(new Point(r, colN-1));
-        	}
-        	}
-        
-        for (int c = 0; c< colN; c++){
-        	if (board[0][c] == 'O') {
-        		board[0][c] = '+';
-                queue.add(new Point(0, c));
-        	}
-        	if (board[rowN-1][c] == 'O') {
-        		board[rowN-1][c] = '+';
-                queue.add(new Point(rowN-1, c));
-        	}
-        	}
-        
-
-        //BFS for the 'O's, and mark it as '+'
-        while (!queue.isEmpty()){
-        	Point p = queue.poll();
-        	int row = p.x;
-        	int col = p.y;
-        	if (row - 1 >= 0 && board[row-1][col] == 'O') {board[row-1][col] = '+'; queue.add(new Point(row-1, col));}
-        	if (row + 1 < rowN && board[row+1][col] == 'O') {board[row+1][col] = '+'; queue.add(new Point(row+1, col));}
-        	if (col - 1 >= 0 && board[row][col - 1] == 'O') {board[row][col-1] = '+'; queue.add(new Point(row, col-1));}
-            if (col + 1 < colN && board[row][col + 1] == 'O') {board[row][col+1] = '+'; queue.add(new Point(row, col+1));}        	      
+        // Base condition
+        if(board.length == 0) return;
+        // 1st Loop : Traversing over first col& last col, to find any 'O' present by the boundary
+        for(int i = 0; i < board[0].length; i++){
+            if(board[0][i] == 'O'){
+                DFS(board, 0, i);
+            }
+            if(board[board.length - 1][i] == 'O'){
+                DFS(board, board.length - 1, i);
+            }
         }
-        
-
-        //turn all '+' to 'O', and 'O' to 'X'
-        for (int i = 0; i<rowN; i++){
-        	for (int j=0; j<colN; j++){
-        		if (board[i][j] == 'O') board[i][j] = 'X';
-        		if (board[i][j] == '+') board[i][j] = 'O';
-        	}
+        // 2nd Loop : Traversing over top row & bottom row, to find any 'O' present by the boundary
+        for(int i = 0; i < board.length; i++){
+            if(board[i][0] == 'O'){
+                DFS(board, i, 0);
+            }
+            if(board[i][board[0].length - 1] == 'O'){
+                DFS(board, i, board[0].length - 1);
+            }
         }
-       
-        
+        // 3rd Loop : Now in this we will traverse on each n every node & check if they are 'O' convert into 'X', if they are '@' convert into 'O'
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                if(board[i][j] == 'O'){
+                    board[i][j] = 'X';
+                }
+                else if(board[i][j] == '@'){
+                    board[i][j] = 'O';
+                }
+            }
+        }
+        return;
+    }
+    // This calls helps in convert the 'O' node present near by the boundary convert them into '@'
+    public void DFS(char[][] board, int i, int j){
+        if(i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] != 'O'){
+            return;
+        }
+        board[i][j] = '@';
+        DFS(board, i + 1, j);
+        DFS(board, i - 1, j);
+        DFS(board, i, j + 1);
+        DFS(board, i, j - 1);
     }
 }
